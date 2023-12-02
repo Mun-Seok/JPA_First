@@ -102,17 +102,25 @@ public class JpaMain {
 
             System.out.println("========");
 */
-            // 준영속 상태
+/*            // 준영속 상태
 
             Member member = em.find(Member.class,150L); // 영속 상태로 올림
-            member.setName("AAAAA");
+            member.setName("AAAAA");*/
 
 //            em.detach(member); // 준영속 상태가 됨, JPA에서 관리 안함 → UPDATE 쿼리 안나감
 
 //            em.clear(); // 영속성 컨텍스트 다 초기화함
 //            Member member2 = em.find(Member.class, 150L); // 초기화되서 새로 조회 쿼리
 
-            System.out.println("=======");
+//            System.out.println("=======");
+
+            Member member = new Member();
+            member.setId(3L);
+            member.setUsername("C");
+            member.setRoleType(RoleType.GUEST);
+
+            em.persist(member);
+
             tx.commit();
         }catch(Exception e){
             tx.rollback();
