@@ -6,12 +6,54 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity // JPA가 관리
+@SequenceGenerator(name = "member_seq_generator", sequenceName = "member_seq")
+//@TableGenerator(name = "MEMBER_SEQ_GENERATOR",
+//        table = "MY_SEQUENCES",
+//        pkColumnValue = "MEMBER_SEQ", allocationSize = 1)
 public class Member {
+
+    @Id
+//    @GeneratedValue(strategy = GenerationType.TABLE, generator = "MEMBER_SEQ_GENERATOR") // TABLE
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq_generator") // SEQUENCE
+//    @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY
+    private Long id;
+//    private String id;
+
+    @Column(name = "name", nullable = false)
+    private String username;
+
+    public Member() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+/*    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }*/
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    /*
     @Id // PK
     private Long id;
 //    @Column(unique = true, length = 10)
- /*   private String name;
-    private int age;*/
+ *//*   private String name;
+    private int age;*//*
 
     @Column(name = "name")
     private String username;
@@ -89,6 +131,7 @@ public class Member {
     public Member() {
 
     }
+    */
 
 /*
     // JPA 기본적으로 내부 리플렉션 같은 것들을 쓰기 때문에 동적으로 객체를 생성해내야함 → 기본 생성자가 있어야함
