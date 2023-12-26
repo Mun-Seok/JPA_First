@@ -8,11 +8,11 @@ import java.util.Date;
 import java.util.List;
 
 @Entity // JPA가 관리
-@SequenceGenerator(name = "member_seq_generator", sequenceName = "member_seq")
+//@SequenceGenerator(name = "member_seq_generator", sequenceName = "member_seq")
 //@TableGenerator(name = "MEMBER_SEQ_GENERATOR",
 //        table = "MY_SEQUENCES",
 //        pkColumnValue = "MEMBER_SEQ", allocationSize = 1)
-public class Member {
+public class Member extends BaseEntity{
 
     @Id
 //    @GeneratedValue(strategy = GenerationType.TABLE, generator = "MEMBER_SEQ_GENERATOR") // TABLE
@@ -35,6 +35,7 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<MemberProduct> memberProducts = new ArrayList<>();
+
 
     public Member() {
     }
