@@ -1,5 +1,7 @@
 package hellojpa;
 
+import org.hibernate.Hibernate;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -145,12 +147,103 @@ public class JpaMain {
             System.out.println("findMovie = " +findMovie);
             */
 
-            Member member = new Member();
+/*            Member member = new Member();
             member.setUsername("user1");
             member.setCreatedBy("kim");
             member.setCreatedDate(LocalDateTime.now());
 
+            em.persist(member);*/
+
+            // 어느 경우에는 팀과 멤버 가져오고 싶고 어떤 상황에서는 멤버만 가져오고 싶음 -> 프록시로 해결
+//            Member member = em.find(Member.class, 1L);
+//            printMember(member);
+//            printMemberAndTeam(member);
+
+          /*  Member member = new Member();
+            member.setUsername("hello");
+
             em.persist(member);
+
+            em.flush();
+            em.clear();
+
+//            Member findMember = em.find(Member.class, member.getId());
+            Member findMember = em.getReference(Member.class, member.getId());
+            System.out.println("findMember = " + findMember.getClass()); // hibernate가 만든 가짜 클래스 -> proxy
+            System.out.println("findMember.id = " + findMember.getId()); // Reference 찾을때 넣어둬서 쿼리 안나감/proxy 객체가 조회됨
+            System.out.println("findMember.username = " + findMember.getUsername()); // DB에 있기 때문에 쿼리 실행
+            System.out.println("findMember.username = " + findMember.getUsername()); // proxy에 있기 때문에 쿼리 실행 X*/
+/*
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member1.setUsername("member2");
+            em.persist(member2);
+
+            em.flush();
+            em.clear();
+
+            Member m1 = em.find(Member.class, member1.getId());
+            Member m2 = em.find(Member.class, member2.getId());
+
+            System.out.println("m1 == m2 = " + (m1.getClass() == m2.getClass())); // 타입 비교 == 쓰면 안됨*/
+
+           /* Member member1 = new Member();
+            member1.setUsername("member1");
+            em.persist(member1);
+
+            em.flush();
+            em.clear();
+
+            Member refMember = em.getReference(Member.class, member1.getId());
+            System.out.println("refMember = " + refMember.getClass()); // Proxy
+//            refMember.getUsername(); // 강제 초기화
+            Hibernate.initialize(refMember); // 강제 초기화
+            System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember)); // 프록시 인스턴스의 초기화 여부
+*/
+
+            /*
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            member1.setTeam(team);
+            em.persist(member1);
+
+            em.flush();
+            em.clear();
+
+            Member m = em.find(Member.class, member1.getId()); // EAGER 사용하면 Member와 Team 다 즉시 로딩함
+
+            System.out.println("m = " + m.getTeam().getClass()); // Lazy를 사용하면 지연 로딩해 proxy로 출력
+
+            System.out.println("=======");
+            m.getTeam().getName(); // getName() 호출할 때 초기화됨
+            System.out.println("=======");*/
+
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            member1.setTeam(team);
+            em.persist(member1);
+
+            em.flush();
+            em.clear();
+
+//            List<Member> members = em.createQuery("select m from Member m", Member.class)
+//                    .getResultList(); // 즉시로딩 설정되어 있으면 SQL이 2번 나감
+            // SQL : select * from Member
+            // SQL : select * from Team where Team_ID = xxx
+
+            List<Member> members = em.createQuery("select m from Member m join fetch m.team", Member.class)
+                    .getResultList(); // 필요하면 fetch join으로 한번에 가져올 수 있음
 
 
             tx.commit();
@@ -161,4 +254,15 @@ public class JpaMain {
         }
         emf.close();
     }
+ /*   private static void printMember(Member member) {
+        System.out.println("member = " + member.getUsername());
+    }
+
+    private static void printMemberAndTeam(Member member) {
+        String username = member.getUsername();
+        System.out.println("username = " + username);
+
+        Team team = member.getTeam();
+        System.out.println("team = " + team);
+    }*/
 }
