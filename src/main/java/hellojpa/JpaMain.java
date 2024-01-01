@@ -225,7 +225,7 @@ public class JpaMain {
             m.getTeam().getName(); // getName() 호출할 때 초기화됨
             System.out.println("=======");*/
 
-            Team team = new Team();
+           /* Team team = new Team();
             team.setName("teamA");
             em.persist(team);
 
@@ -244,7 +244,24 @@ public class JpaMain {
 
             List<Member> members = em.createQuery("select m from Member m join fetch m.team", Member.class)
                     .getResultList(); // 필요하면 fetch join으로 한번에 가져올 수 있음
+*/
 
+            Child child1 = new Child();
+            Child child2 = new Child();
+
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            em.persist(parent);
+//            em.persist(child1);// 하나씩 persist 해줘야함 -> cascade
+//            em.persist(child2);
+
+            em.flush();
+            em.clear();
+
+            Parent findParent = em.find(Parent.class, parent.getId());
+            findParent.getChildList().remove(0);
 
             tx.commit();
         }catch(Exception e){
