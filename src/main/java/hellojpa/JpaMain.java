@@ -5,6 +5,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -246,7 +247,7 @@ public class JpaMain {
                     .getResultList(); // 필요하면 fetch join으로 한번에 가져올 수 있음
 */
 
-            Child child1 = new Child();
+/*            Child child1 = new Child();
             Child child2 = new Child();
 
             Parent parent = new Parent();
@@ -261,7 +262,82 @@ public class JpaMain {
             em.clear();
 
             Parent findParent = em.find(Parent.class, parent.getId());
-            findParent.getChildList().remove(0);
+            findParent.getChildList().remove(0);*/
+
+//            Member member = new Member();
+//            member.setUsername("hello");
+//            member.setHomeAddress(new Address("city", "street", "100000"));
+//            member.setWorkPeriod(new Period());
+//
+//            em.persist(member);
+
+           /* Address address = new Address("city", "street", "100000");
+
+
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setHomeAddress(address);
+            em.persist(member);
+
+//            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
+
+//            Member member2 = new Member();
+//            member.setUsername("member2");
+////            member.setHomeAddress(address); // 같은 임베디드 타입 사용
+//            member.setHomeAddress(copyAddress); // 복사한 임베디드 사기
+//            em.persist(member2);
+
+//            member.getHomeAddress().setCity("newCity"); // 모든 엔티티에서 바뀜
+
+            Address newAddress = new Address("NewCity", address.getStreet(), address.getZipcode()); // 값을 바꾸려면 완전히 새로 만들어야 함
+            member.setHomeAddress(newAddress);*/
+
+            // 값타입 저장
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setHomeAddress(new Address("homeCity","street","10000"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("족발");
+            member.getFavoriteFoods().add("피자");
+
+            member.getAddressHistory().add(new AddressEntity("old1", "street","10000"));
+            member.getAddressHistory().add(new AddressEntity("old2", "street","10000"));
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            // 값 타입 조회
+            Member findMember = em.find(Member.class, member.getId());
+
+//            List<Address> addressHistory = findMember.getAddressHistory();
+//            for (Address address : addressHistory) {
+//                System.out.println("address = " + address.getCity());
+//            }
+//
+//            Set<String> favoriteFoods = findMember.getFavoriteFoods();
+//            for (String favoriteFood : favoriteFoods) {
+//                System.out.println("favoriteFood = " + favoriteFood);
+//            }
+
+            // 값 타입 수정 homeCity -> newCity
+//            findMember.getHomeAddress().setCity("newCity"); // 이런식으로 변경 X
+            Address a = findMember.getHomeAddress();
+            findMember.setHomeAddress(new Address("new City", a.getStreet(), a.getZipcode())); // 완전히 교체해줘야 함
+
+            // 치킨 -> 한식
+            findMember.getFavoriteFoods().remove("치킨");
+            findMember.getFavoriteFoods().add("한식");
+
+//            findMember.getAddressHistory().remove(new Address("old1", "street", "10000"));
+//            findMember.getAddressHistory().add(new Address("newCity1", "street", "10000"));
+
+            findMember.getAddressHistory().remove(new AddressEntity("old1", "street", "10000"));
+            findMember.getAddressHistory().add(new AddressEntity("newCity1", "street", "10000"));
+
+            em.persist(member);
 
             tx.commit();
         }catch(Exception e){
