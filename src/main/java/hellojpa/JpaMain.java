@@ -3,6 +3,9 @@ package hellojpa;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -292,7 +295,7 @@ public class JpaMain {
             Address newAddress = new Address("NewCity", address.getStreet(), address.getZipcode()); // 값을 바꾸려면 완전히 새로 만들어야 함
             member.setHomeAddress(newAddress);*/
 
-            // 값타입 저장
+          /*  // 값타입 저장
             Member member = new Member();
             member.setUsername("member1");
             member.setHomeAddress(new Address("homeCity","street","10000"));
@@ -337,7 +340,69 @@ public class JpaMain {
             findMember.getAddressHistory().remove(new AddressEntity("old1", "street", "10000"));
             findMember.getAddressHistory().add(new AddressEntity("newCity1", "street", "10000"));
 
+            em.persist(member);*/
+
+//            JPQL
+//            List<Member> result = em.createQuery(
+//                    "select m From Member m where m.username like '%kim'",
+//                    Member.class
+//            ).getResultList();
+
+            // JPQL 동적쿼리 처리 하기 힘듬
+//            String username;
+//            if (username != null) {
+//                String where = "'where m.username like '%kim'";
+//                qlString + where;
+//            }
+//
+//            String qlString = "select m From Member m where m.username like '%kim'";
+//
+//            List<Member> result = em.createQuery(
+//                    qlString,
+//                    Member.class
+//            ).getResultList();
+
+          /*
+          // Criteria
+            // Criteria 사용 준비
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Member> query = cb.createQuery(Member.class);
+
+            // 루트 클래스 (조회를 시작할 클래스)
+            Root<Member> m = query.from(Member.class);
+
+            // 쿼리 생성
+            CriteriaQuery<Member> cq = query.select(m).where(cb.equal(m.get("username"), "kim"));
+            List<Member> resultList = em.createQuery(cq)
+                    .getResultList();
+
+            String username = "dsafas";
+            if (username != null) {
+                cq = cq.where(cb.equal(m.get("username"), "kim"));
+            }
+            */
+
+         /*   // NativeQuery
+            em.createNativeQuery("select MEMBER_ID, city, street, zipcode, USERNAME from MEMBER")
+                    .getResultList();*/
+
+            Member member = new Member();
+            member.setUsername("member1");
             em.persist(member);
+
+            // flush -> commit, query 할때 동작
+
+            em.flush();
+
+            // 결과 0
+            // dbconn.createQuery("select * from member);
+
+            List<Member> resultList = em.createNativeQuery("select MEMBER_ID, city, street, zipcode, USERNAME from MEMBER", Member.class)
+                    .getResultList();
+            for (Member member1 : resultList) {
+                System.out.println("member1 = " + member1);
+            }
+
 
             tx.commit();
         }catch(Exception e){
